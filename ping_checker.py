@@ -1,39 +1,62 @@
-import os, time
-import subprocess
+import os, random
+import matplotlib.pyplot as plt
+
 
 class PingChecker:
     def __init__(self):
+        self.domain = ""
+        self.ping_array = []
         pass
 
     def ping(self, hostname):
-        #for x in range(10):
-        pings = os.system("ping -n 25 " + hostname + " > C:\\\\Users\\Luke\\Documents\\ping_test.txt")
-        print('this is a test' )
-        #print(os.system("ping -n 10 " + hostname))
-        #strip out the time variable from
+        self.domain = hostname
+        os.system("ping -n 25 " + hostname + " > C:\\\\Users\\Luke\\Documents\\ping_test.txt")
 
     def remove_file(self):
         os.remove("C:\\\\Users\\Luke\\Documents\\ping_test.txt")
 
     def read_ping(self):
-        ping_file = open(r"C:\Users\Luke\Documents\ping_test.txt","r")
+        ping_file = open("C:\\\\Users\\Luke\\Documents\\ping_test.txt", "r+")
         lines = ping_file.readlines()
-        values = []
-        # if "time=" in x:
-        # print(x["time=":])
+
+        #domain name followed by the ping over the test
         for x in lines:
+            if "time=" in x:
+                self.ping_array.append(x.split("time=")[1].split("ms")[0])
+
+        for x in self.ping_array:
             print(x)
 
-       # return ping_file
+        ping_file.close()
+
+    def make_plot(self):
+        x_arr = []
+        y_arr = []
+        y_ticks = []
+        for i in range(30):
+            y_ticks.append(i*2)
+        count = 0
+        for x in range(len(self.ping_array)):
+            count += 1
+            x_arr.append(count)
+            y_arr.append(self.ping_array[x]*random.randint(1, 10))
+        plt.scatter(x_arr, y_arr)
+        plt.gca().invert_yaxis() #yaxis inverted for some reason
+        plt.ylabel('Pings (ms)')
+        #plt.yticks(y_ticks)
+        plt.xlabel('Entry number')
+        plt.xticks(x_arr)
+        plt.title('Ping test for ' + self.domain)
+        plt.show()
 
 
 if __name__ == '__main__':
     print('hello')
     checker = PingChecker()
-   # checker.ping('google.com')
+    checker.ping('208.67.222.222')
     checker.read_ping()
+    checker.make_plot()
 
-    #time.sleep(10)
-    #checker.remove_file()
+
 
 
